@@ -178,6 +178,19 @@ describe('scoreJobFitHeuristic', () => {
     expect(result.overall).toBeGreaterThanOrEqual(0)
     expect(result.overall).toBeLessThanOrEqual(100)
   })
+
+  it('does not inflate skillMatch when job has no requirements array', () => {
+    // A job with only a description and no structured requirements[] is common on LinkedIn. 
+    // The old equation had baseRatio = matched/matched + 0 = 1.0 whenever any skill matched, awarding a perfect score no matter what.
+    const partialMatchJob = makeJob({
+      title: 'Senior Mechanical Engineer',
+      description: 'Design mechanical systems. Requires CAD, thermodynamics, materials science.',
+      requirements: undefined  // no structured requirements — the common case
+    })
+    const result = scoreJobFitHeuristic(profile, partialMatchJob)
+    // Profile has AI/SaaS/biotech skills, and the job has very little overlap with mech eng. skillMatch should reflect weak overlap, not a perfect score.
+    expect(result.dimensions.skillMatch).toBeLessThan(40)
+  })
 })
 
 describe('rankJobsByFit', () => {

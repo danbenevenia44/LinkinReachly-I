@@ -184,7 +184,7 @@ function scoreSkillMatch(profile: UserProfile, job: JobPosting): { score: number
   }
 
   const baseRatio = allProfileSkills.size > 0
-    ? matched.length / Math.max(matched.length + missing.length, 1)
+    ? matched.length / allProfileSkills.size
     : 0
   const recencyBonus = totalWeight > 0 ? weightedMatches / totalWeight : 0
   const score = Math.round(Math.min(100, (baseRatio * 60 + recencyBonus * 40)))
